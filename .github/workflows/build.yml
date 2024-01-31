@@ -43,8 +43,6 @@ jobs:
           restore-keys: |
             build-runner-
 
-      - name: Run build_runner
-        run: flutter packages pub run build_runner build -d
 
       - name: Bump build number
         run: |
