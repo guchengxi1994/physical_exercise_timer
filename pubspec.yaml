@@ -25,10 +25,10 @@ dependencies:
   toastification: ^1.2.0
   group_button: ^5.3.4
 
-dependency_overrides: 
-  auto_lock_windows: 
-    git:
-      url: https://gitee.com/guchengxi1994/auto_lock_windows
+# dependency_overrides: 
+#   auto_lock_windows: 
+#     git:
+#       url: https://gitee.com/guchengxi1994/auto_lock_windows
 
 
 dev_dependencies:
