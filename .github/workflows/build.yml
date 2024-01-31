@@ -54,7 +54,7 @@ jobs:
           flutter build windows --release
 
       - name: Set tag name
-        run: echo "tag_name=v$(cider version)" >> $env:GITHUB_ENV
+        run: echo "tag_name=$(flutter pub run cider version | cut -d '+' -f 2)" >> $env:GITHUB_ENV
 
       - name: Archive release
         uses: thedoctor0/zip-release@0.7.6
