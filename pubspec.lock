@@ -12,9 +12,11 @@ packages:
   auto_lock_windows:
     dependency: "direct main"
     description:
-      path: "D:\\github_repo\\auto_lock_windows"
-      relative: false
-    source: path
+      path: "."
+      ref: HEAD
+      resolved-ref: "6e16c56db7bbf3c5f60008eac137f700a277c731"
+      url: "https://gitee.com/guchengxi1994/auto_lock_windows"
+    source: git
     version: "0.0.2"
   boolean_selector:
     dependency: transitive

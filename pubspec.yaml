@@ -27,7 +27,8 @@ dependencies:
 
 dependency_overrides: 
   auto_lock_windows: 
-    path: D:\github_repo\auto_lock_windows
+    git:
+      url: https://gitee.com/guchengxi1994/auto_lock_windows
 
 
 dev_dependencies:
