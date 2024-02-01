@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:local_notifier/local_notifier.dart';
 import 'package:toastification/toastification.dart';
 
 class ToastUtils {
@@ -31,15 +32,6 @@ class ToastUtils {
       foregroundColor: Colors.black,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      // borderRadius: BorderRadius.circular(12),
-      // boxShadow: const [
-      //   BoxShadow(
-      //     color: Color(0x07000000),
-      //     blurRadius: 16,
-      //     offset: Offset(0, 16),
-      //     spreadRadius: 0,
-      //   )
-      // ],
       showProgressBar: true,
       closeButtonShowType: CloseButtonShowType.onHover,
       closeOnClick: false,
@@ -53,5 +45,30 @@ class ToastUtils {
         },
       ),
     );
+  }
+}
+
+class NotifierController {
+  final List<LocalNotification> _notificationList = [];
+
+  newNotification(String title, subtitle, body) async {
+    try {
+      await _notificationList.last.close();
+      _notificationList.removeLast();
+    } catch (_) {}
+
+    LocalNotification notification = LocalNotification(
+      title: title,
+      subtitle: subtitle,
+      body: body,
+    );
+
+    notification.onShow = () {};
+    notification.onClose = (closeReason) {
+      _notificationList.remove(notification);
+    };
+
+    _notificationList.add(notification);
+    notification.show();
   }
 }

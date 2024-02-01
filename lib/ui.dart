@@ -7,6 +7,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:group_button/group_button.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:physical_exercise_timer/constants.dart';
+import 'package:physical_exercise_timer/isar/database.dart';
+import 'package:physical_exercise_timer/isar/record.dart';
 import 'package:physical_exercise_timer/notifier.dart';
 import 'package:physical_exercise_timer/state.dart';
 import 'package:physical_exercise_timer/utils.dart';
@@ -24,10 +26,18 @@ class _UIState extends ConsumerState<UI> {
   late final controller = GroupButtonController(
       selectedIndex: ref.watch(appProvider).notificationType.id);
 
+  final NotifierController notifierController = NotifierController();
+
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(appProvider);
     return Scaffold(
+      appBar: const PreferredSize(
+          preferredSize: Size.fromHeight(40),
+          child: WindowCaption(
+            brightness: Brightness.light,
+            backgroundColor: Colors.lightBlue,
+          )),
       body: Container(
         padding: const EdgeInsets.all(10),
         child: Column(
@@ -158,19 +168,21 @@ class _UIState extends ConsumerState<UI> {
       duration += 1;
 
       if (duration >= state.duration) {
-        // _autoLockWindowsPlugin.lockScreen();
-        switch (state.notificationType) {
-          case NotificationType.Lock:
-            _autoLockWindowsPlugin.lockScreen();
-          case NotificationType.Notification:
-            print("");
-          case NotificationType.ToastInApp:
-            ToastUtils.message(context,
-                title:
-                    "you should take a ${state.execDuration ~/ 60} min break");
-          default:
-            _autoLockWindowsPlugin.lockScreen();
-        }
+        await database.record(RecordType.Break).then((value) {
+          switch (state.notificationType) {
+            case NotificationType.Lock:
+              _autoLockWindowsPlugin.lockScreen();
+            case NotificationType.Notification:
+              notifierController.newNotification("Get up",
+                  "You should take a break", "You should take a break");
+            case NotificationType.ToastInApp:
+              ToastUtils.message(context,
+                  title:
+                      "you should take a ${state.execDuration ~/ 60} min break");
+            default:
+              _autoLockWindowsPlugin.lockScreen();
+          }
+        });
       } else if (duration == (0.75 * (state.duration)).ceil()) {
         windowManager.focus();
         _autoLockWindowsPlugin.playSound();
@@ -199,12 +211,14 @@ class _UIState extends ConsumerState<UI> {
                 Text("Remaining ${state.duration - duration} Secs",
                     style: const TextStyle(color: Color(0xFF535355))),
                 ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       if (!started) {
+                        await database.record(RecordType.Work);
                         setState(() {
                           started = true;
                         });
                       } else {
+                        await database.record(RecordType.Break);
                         setState(() {
                           duration = 0;
                         });
@@ -223,4 +237,6 @@ class _UIState extends ConsumerState<UI> {
       ),
     );
   }
+
+  final IsarDatabase database = IsarDatabase();
 }
