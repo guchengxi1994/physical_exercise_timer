@@ -1,14 +1,22 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:local_notifier/local_notifier.dart';
 import 'package:physical_exercise_timer/constants.dart';
 import 'package:physical_exercise_timer/local_storage.dart';
 import 'package:window_manager/window_manager.dart';
 
+import 'isar/database.dart';
 import 'ui.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await localNotifier.setup(
+    appName: '久坐计时器',
+    shortcutPolicy: ShortcutPolicy.requireCreate,
+  );
+
   await windowManager.ensureInitialized();
   WindowOptions windowOptions = const WindowOptions(
     size: Size(windowWidth, windowHeight),
@@ -18,6 +26,7 @@ void main() async {
     center: false,
     // backgroundColor: Colors.transparent,
   );
+  windowManager.setTitleBarStyle(TitleBarStyle.hidden);
   windowManager.waitUntilReadyToShow(windowOptions, () async {
     await windowManager.show();
     await windowManager.focus();
@@ -25,6 +34,8 @@ void main() async {
 
   final storage = LocalStorage();
   await storage.initStorage();
+  final IsarDatabase database = IsarDatabase();
+  await database.initialDatabase();
 
   runApp(const ProviderScope(child: MyApp()));
 }
