@@ -32,21 +32,9 @@ jobs:
       - name: Run pub get
         run: flutter pub get
 
-      # - name: Cache build_runner
-      #   id: cache-build-runner
-      #   uses: actions/cache@v3
-      #   with:
-      #     path: |
-      #       **/.dart_tool/build
-      #     key: build-runner-${{ hashFiles('**/asset_graph.json') }}-${{ hashFiles('**/pubspec.lock') }}
-      #     restore-keys: |
-      #       build-runner-
-
-
       - name: Bump build number
         run: |
           flutter pub global activate cider
-          cider bump build --build=${{ github.run_number }}
 
       - name: Build windows
         run: |
