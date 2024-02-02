@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:group_button/group_button.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
+import 'package:physical_exercise_timer/chart.dart';
 import 'package:physical_exercise_timer/constants.dart';
 import 'package:physical_exercise_timer/isar/database.dart';
 import 'package:physical_exercise_timer/isar/record.dart';
@@ -27,97 +28,153 @@ class _UIState extends ConsumerState<UI> {
       selectedIndex: ref.watch(appProvider).notificationType.id);
 
   final NotifierController notifierController = NotifierController();
+  final PageController pageController = PageController(initialPage: 0);
+
+  late Icon icon = const Icon(
+    Icons.image,
+    color: color,
+  );
+
+  static const Color color = Colors.black54;
 
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(appProvider);
     return Scaffold(
-      appBar: const PreferredSize(
-          preferredSize: Size.fromHeight(40),
+      appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(40),
           child: WindowCaption(
             brightness: Brightness.light,
             backgroundColor: Colors.lightBlue,
+            title: Row(
+              children: [
+                const SizedBox(
+                  width: 150,
+                ),
+                InkWell(
+                  onTap: () {
+                    if (pageController.page == 0) {
+                      pageController.animateToPage(1,
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.linear);
+                      icon = const Icon(
+                        Icons.list,
+                        color: color,
+                      );
+                    } else {
+                      pageController.animateToPage(0,
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.linear);
+                      icon = const Icon(
+                        Icons.image,
+                        color: color,
+                      );
+                    }
+                    setState(() {});
+                  },
+                  child: icon,
+                )
+              ],
+            ),
           )),
       body: Container(
         padding: const EdgeInsets.all(10),
-        child: Column(
-          children: [
-            _wrapper(
-                "设置等待时间",
-                SizedBox(
-                  child: Row(
-                    children: [
-                      Text("${state.duration ~/ 60} min"),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      InkWell(
-                        onTap: () async {
-                          var resultingDuration = await showDurationPicker(
-                            context: context,
-                            initialTime: const Duration(minutes: 30),
-                          );
-                          if (resultingDuration != null) {
-                            ref
-                                .read(appProvider.notifier)
-                                .changeDuration(resultingDuration.inSeconds);
-                          }
-                        },
-                        child: const Icon(Icons.update),
-                      )
-                    ],
-                  ),
-                )),
-            _wrapper(
-                "设置活动时间",
-                SizedBox(
-                  child: Row(
-                    children: [
-                      Text("${state.execDuration ~/ 60} min"),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      InkWell(
-                        onTap: () async {
-                          var resultingDuration = await showDurationPicker(
-                            context: context,
-                            initialTime: const Duration(minutes: 5),
-                          );
-                          if (resultingDuration != null) {
-                            ref.read(appProvider.notifier).changeExecDuration(
-                                resultingDuration.inSeconds);
-                          }
-                        },
-                        child: const Icon(Icons.update),
-                      )
-                    ],
-                  ),
-                )),
-            Row(
-              children: [
-                const Text("设置提示类型"),
-                Expanded(
-                    child: SizedBox(
-                  child: GroupButton<NotificationType>(
-                    controller: controller,
-                    isRadio: true,
-                    onSelected: (index, isSelected, b) {
-                      ref
-                          .read(appProvider.notifier)
-                          .changeType(NotificationType.fromType(index.id));
-                    },
-                    buttons: NotificationType.values,
-                  ),
-                ))
-              ],
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            _buildCountDownWidget(state)
-          ],
+        child: PageView(
+          physics: const NeverScrollableScrollPhysics(),
+          controller: pageController,
+          children: [_buildMain(state), const ChartView()],
         ),
       ),
+    );
+  }
+
+  Widget _buildMain(AppState state) {
+    return Column(
+      children: [
+        _wrapper(
+            "设置等待时间",
+            SizedBox(
+              child: Row(
+                children: [
+                  Text("${state.duration ~/ 60} min"),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  InkWell(
+                    onTap: () async {
+                      var resultingDuration = await showDurationPicker(
+                        context: context,
+                        initialTime: const Duration(minutes: 30),
+                      );
+                      if (resultingDuration != null) {
+                        ref
+                            .read(appProvider.notifier)
+                            .changeDuration(resultingDuration.inSeconds);
+                      }
+                    },
+                    child: const Icon(Icons.update),
+                  )
+                ],
+              ),
+            )),
+        const SizedBox(
+          height: 40,
+        ),
+        _wrapper(
+            "设置活动时间",
+            SizedBox(
+              child: Row(
+                children: [
+                  Text("${state.execDuration ~/ 60} min"),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  InkWell(
+                    onTap: () async {
+                      var resultingDuration = await showDurationPicker(
+                        context: context,
+                        initialTime: const Duration(minutes: 5),
+                      );
+                      if (resultingDuration != null) {
+                        ref
+                            .read(appProvider.notifier)
+                            .changeExecDuration(resultingDuration.inSeconds);
+                      }
+                    },
+                    child: const Icon(Icons.update),
+                  )
+                ],
+              ),
+            )),
+        const SizedBox(
+          height: 40,
+        ),
+        Row(
+          children: [
+            const Text("设置提示类型"),
+            Expanded(
+                child: SizedBox(
+              child: GroupButton<NotificationType>(
+                controller: controller,
+                isRadio: true,
+                onSelected: (index, isSelected, b) {
+                  ref
+                      .read(appProvider.notifier)
+                      .changeType(NotificationType.fromType(index.id));
+                },
+                buttons: NotificationType.values,
+              ),
+            ))
+          ],
+        ),
+        const SizedBox(
+          height: 40,
+        ),
+        // const SizedBox(
+        //   height: 20,
+        // ),
+        _buildCountDownWidget(state)
+      ],
     );
   }
 
@@ -158,6 +215,7 @@ class _UIState extends ConsumerState<UI> {
     try {
       _sub.cancel();
     } catch (_) {}
+    pageController.dispose();
     super.dispose();
   }
 
@@ -213,12 +271,12 @@ class _UIState extends ConsumerState<UI> {
                 ElevatedButton(
                     onPressed: () async {
                       if (!started) {
-                        await database.record(RecordType.Work);
+                        await database.record(RecordType.Break);
                         setState(() {
                           started = true;
                         });
                       } else {
-                        await database.record(RecordType.Break);
+                        await database.record(RecordType.Work);
                         setState(() {
                           duration = 0;
                         });
