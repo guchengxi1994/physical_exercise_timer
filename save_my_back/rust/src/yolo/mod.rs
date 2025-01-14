@@ -10,6 +10,7 @@ use once_cell::sync::Lazy;
 
 pub mod infer;
 pub mod model;
+pub mod utils;
 
 pub static MODELS: Lazy<RwLock<Models>> = Lazy::new(|| RwLock::new(Models::default()));
 
