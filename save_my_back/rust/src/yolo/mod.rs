@@ -4,9 +4,10 @@ use anyhow::Ok;
 use candle_core::{DType, Device, Tensor};
 use image::DynamicImage;
 use imageproc::definitions::Image;
-use infer::{report_detect, report_pose};
+use infer::{report_detect, report_pose, report_pose_with_points};
 use model::{YoloV8, YoloV8Pose};
 use once_cell::sync::Lazy;
+use utils::check_posture;
 
 pub mod infer;
 pub mod model;
@@ -27,7 +28,7 @@ pub fn init_models(model_path: String) -> anyhow::Result<()> {
     Ok(())
 }
 
-pub fn infer(img_bytes: Vec<u8>) -> anyhow::Result<Vec<u8>> {
+pub fn infer(img_bytes: Vec<u8>) -> anyhow::Result<(Vec<u8>, String)> {
     let models = MODELS.read().unwrap();
     models.pose_run(img_bytes)
 }
@@ -45,6 +46,7 @@ impl Models {
         }
     }
 
+    #[deprecated(note = "unused for pose detection")]
     pub fn run(&self, image_bytes: Vec<u8>) -> anyhow::Result<Vec<u8>> {
         let device = Device::cuda_if_available(0)?;
         let origin_image = ImageProcessor::from_bytes(image_bytes, &device)?;
@@ -75,13 +77,13 @@ impl Models {
         }
     }
 
-    pub fn pose_run(&self, image_bytes: Vec<u8>) -> anyhow::Result<Vec<u8>> {
+    pub fn pose_run(&self, image_bytes: Vec<u8>) -> anyhow::Result<(Vec<u8>, String)> {
         let device = Device::cuda_if_available(0)?;
         let origin_image = ImageProcessor::from_bytes(image_bytes, &device)?;
 
         if let Some(model_pose) = &self.yolov8_pose {
             let pred_pose = model_pose.run(origin_image.0)?;
-            let img = report_pose(
+            let (img, points) = report_pose_with_points(
                 &pred_pose,
                 origin_image.1,
                 origin_image.2,
@@ -90,11 +92,13 @@ impl Models {
                 0.45,
             )?;
 
+            let c = check_posture(&points);
+
             let mut bytes: Vec<u8> = Vec::new();
             // img.save("result.jpg")?;
             img.write_to(&mut Cursor::new(&mut bytes), image::ImageFormat::Png)?;
 
-            return Ok(bytes);
+            return Ok((bytes, c));
         } else {
             anyhow::bail!("detect model not found")
         }
@@ -171,13 +175,15 @@ mod tests {
 
     #[test]
     fn test_yolov8() -> anyhow::Result<()> {
-        let img_path = r"D:\github_repo\physical_exercise_timer\save_my_back\rust\bike.jpg";
+        // let img_path = r"D:\github_repo\physical_exercise_timer\save_my_back\rust\bike.jpg";
+        let img_path = r"C:\Users\xiaoshuyui\Desktop\test.png";
         let img_bytes = std::fs::read(img_path)?;
         let model_path = r"D:\github_repo\ai_tools\rust\assets\yolov8s-pose.safetensors";
         init_models(model_path.to_owned())?;
 
         let b = infer(img_bytes)?;
-        std::fs::write("bike_result.jpg", b)?;
+        std::fs::write("bike_result.jpg", b.0)?;
+        println!("{}", b.1);
         anyhow::Ok(())
     }
 }

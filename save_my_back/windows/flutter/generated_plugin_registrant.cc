@@ -8,10 +8,16 @@
 
 #include <auto_lock_windows/auto_lock_windows_plugin_c_api.h>
 #include <camera_windows/camera_windows.h>
+#include <screen_retriever_windows/screen_retriever_windows_plugin_c_api.h>
+#include <window_manager/window_manager_plugin.h>
 
 void RegisterPlugins(flutter::PluginRegistry* registry) {
   AutoLockWindowsPluginCApiRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("AutoLockWindowsPluginCApi"));
   CameraWindowsRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("CameraWindows"));
+  ScreenRetrieverWindowsPluginCApiRegisterWithRegistrar(
+      registry->GetRegistrarForPlugin("ScreenRetrieverWindowsPluginCApi"));
+  WindowManagerPluginRegisterWithRegistrar(
+      registry->GetRegistrarForPlugin("WindowManagerPlugin"));
 }

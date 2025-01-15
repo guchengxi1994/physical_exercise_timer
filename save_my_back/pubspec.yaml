@@ -38,9 +38,15 @@ dependencies:
   camera_windows: ^0.2.6+1
   camera_platform_interface: ^2.9.0
   cupertino_icons: ^1.0.8
+  flutter_rust_bridge: 2.5.1
   rust_lib_save_my_back:
     path: rust_builder
-  flutter_rust_bridge: 2.5.1
+  toastification: ^2.3.0
+  window_manager: ^0.4.3
+  riverpod: ^2.6.1
+  flutter_riverpod: ^2.6.1
+  logger: ^2.5.0
+  he: ^0.0.2+1
   
 
 dev_dependencies:
