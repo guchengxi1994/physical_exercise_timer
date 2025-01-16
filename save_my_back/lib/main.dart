@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:save_my_back/config.dart';
 import 'package:save_my_back/src/rust/api/detector.dart';
 import 'package:save_my_back/src/rust/frb_generated.dart';
 import 'package:toastification/toastification.dart';
@@ -8,13 +11,19 @@ import 'package:window_manager/window_manager.dart';
 import 'app/main_screen.dart';
 import 'constants.dart';
 
+String getConfigPath() {
+  String executablePath = Platform.resolvedExecutable;
+  return "${File(executablePath).parent.path}/config.toml";
+}
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await windowManager.ensureInitialized();
   await RustLib.init();
-  await initModels(
-      modelPath:
-          r"D:\github_repo\ai_tools\rust\assets\yolov8s-pose.safetensors");
+
+  AppConfig config = AppConfig.fromFile(File(getConfigPath()));
+
+  await initModels(modelPath: config.modelPath);
 
   WindowOptions windowOptions = WindowOptions(
     size: minSize,

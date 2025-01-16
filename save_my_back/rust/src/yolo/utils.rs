@@ -26,7 +26,7 @@ pub fn check_posture(keypoints: &Vec<Point>) -> String {
     let threshold = 20.0;
 
     if keypoints.is_empty() {
-        return "人数超过1人".to_string();
+        return "未监测到人员".to_string();
     }
 
     // 确保关键点数量足够

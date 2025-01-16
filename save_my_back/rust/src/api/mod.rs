@@ -1,2 +1,2 @@
-pub mod simple;
 pub mod detector;
+pub mod simple;

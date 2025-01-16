@@ -1,6 +1,6 @@
 use crate::yolo;
 
-pub fn init_models(model_path: String)-> String{
+pub fn init_models(model_path: String) -> String {
     let result = yolo::init_models(model_path);
     match result {
         Ok(_) => "Model initialized successfully".to_string(),

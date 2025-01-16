@@ -1,3 +1,7 @@
+// ignore_for_file: avoid_init_to_null
+
+import 'dart:typed_data';
+
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,6 +18,24 @@ class MainScreen extends ConsumerStatefulWidget {
 }
 
 class _MainScreenState extends ConsumerState<MainScreen> {
+  late final stream = ref.read(mainScreenNotifierProvider.notifier).stream;
+
+  Uint8List? imageData = null;
+  Uint8List? detectData = null;
+  String? result = null;
+
+  @override
+  void initState() {
+    super.initState();
+    stream.listen((event) {
+      setState(() {
+        imageData = event?.$1;
+        detectData = event?.$2;
+        result = event?.$3;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(mainScreenNotifierProvider);
@@ -83,6 +105,9 @@ class _MainScreenState extends ConsumerState<MainScreen> {
                                   flex: 1,
                                   child: Container(
                                     decoration: backgroundDecoration,
+                                    child: imageData != null
+                                        ? Image.memory(imageData!)
+                                        : null,
                                   )),
                             ],
                           )),
@@ -95,11 +120,17 @@ class _MainScreenState extends ConsumerState<MainScreen> {
                                   flex: 1,
                                   child: Container(
                                     decoration: backgroundDecoration,
+                                    child: detectData != null
+                                        ? Image.memory(detectData!)
+                                        : null,
                                   )),
                               Expanded(
                                   flex: 1,
                                   child: Container(
                                     decoration: backgroundDecoration,
+                                    child: Center(
+                                      child: Text(result ?? "No result"),
+                                    ),
                                   )),
                             ],
                           ))

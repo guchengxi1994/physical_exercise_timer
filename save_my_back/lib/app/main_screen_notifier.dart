@@ -4,16 +4,20 @@ import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:save_my_back/constants.dart';
+import 'package:save_my_back/src/rust/api/detector.dart';
 import 'package:save_my_back/utils/logger.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'main_screen_state.dart';
 
 class MainScreenNotifier extends AutoDisposeAsyncNotifier<MainScreenState> {
-  late StreamController<(Uint8List, String)?> streamController =
+  late StreamController<(Uint8List, Uint8List, String)?> streamController =
       StreamController();
 
-  Stream<(Uint8List, String)?> get stream => streamController.stream;
+  Stream<(Uint8List, Uint8List, String)?> get stream => streamController.stream;
+
+  // ignore: avoid_init_to_null
+  late Timer? timer = null;
 
   @override
   FutureOr<MainScreenState> build() async {
@@ -24,6 +28,8 @@ class MainScreenNotifier extends AutoDisposeAsyncNotifier<MainScreenState> {
       if (state.value!.cameraId != -1) {
         await CameraPlatform.instance.dispose(state.value!.cameraId);
       }
+      timer?.cancel();
+      streamController.close();
     });
 
     return MainScreenState(
@@ -75,6 +81,17 @@ class MainScreenNotifier extends AutoDisposeAsyncNotifier<MainScreenState> {
     );
     state = await AsyncValue.guard(() async {
       return state.value!.copyWith(isCameraReady: true, cameraId: cameraId);
+    });
+
+    timer = Timer.periodic(Duration(seconds: 5), (timer) async {
+      final image = await CameraPlatform.instance.takePicture(cameraId);
+      final imgBytes = await image.readAsBytes();
+      final inferenceResult = await infer(imgBytes: imgBytes);
+      if (inferenceResult == null) {
+        return;
+      }
+      streamController.add((imgBytes, inferenceResult.$1, inferenceResult.$2));
+      logger.d("send to frontend");
     });
   }
 

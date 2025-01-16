@@ -1,5 +1,7 @@
 // modified from candle offcial examples
 
+use std::cmp::Ordering;
+
 use candle_core::{DType, Device, IndexOp, Result, Tensor};
 use candle_nn::{Module, VarBuilder};
 use candle_transformers::object_detection::{non_maximum_suppression, Bbox, KeyPoint};
@@ -352,23 +354,31 @@ pub fn report_pose_with_points(
         }
     }
 
+    if bboxes.is_empty() {
+        return Ok((img.into(), vec![]));
+    }
+
     let mut bboxes = vec![bboxes];
     non_maximum_suppression(&mut bboxes, nms_threshold);
     let bboxes = &bboxes[0];
 
-    let mut points = vec![];
+    if let Some(largest_bbox) = bboxes.iter().max_by(|a, b| {
+        let a_area = (a.xmax - a.xmin) * (a.ymax - a.ymin);
+        let b_area = (b.xmax - b.xmin) * (b.ymax - b.ymin);
+        return a_area.partial_cmp(&b_area).unwrap_or(Ordering::Greater);
+    }) {
+        let mut points = vec![];
 
-    // Annotate the original image and print boxes information.
-    let (initial_h, initial_w) = (img.height(), img.width());
-    let w_ratio = initial_w as f32 / w as f32;
-    let h_ratio = initial_h as f32 / h as f32;
-    let mut img = img.to_rgb8();
-    for b in bboxes.iter() {
-        println!("{b:?}");
-        let xmin = (b.xmin * w_ratio) as i32;
-        let ymin = (b.ymin * h_ratio) as i32;
-        let dx = (b.xmax - b.xmin) * w_ratio;
-        let dy = (b.ymax - b.ymin) * h_ratio;
+        // Annotate the original image and print boxes information.
+        let (initial_h, initial_w) = (img.height(), img.width());
+        let w_ratio = initial_w as f32 / w as f32;
+        let h_ratio = initial_h as f32 / h as f32;
+        let mut img = img.to_rgb8();
+
+        let xmin = (largest_bbox.xmin * w_ratio) as i32;
+        let ymin = (largest_bbox.ymin * h_ratio) as i32;
+        let dx = (largest_bbox.xmax - largest_bbox.xmin) * w_ratio;
+        let dy = (largest_bbox.ymax - largest_bbox.ymin) * h_ratio;
         if dx >= 0. && dy >= 0. {
             imageproc::drawing::draw_hollow_rect_mut(
                 &mut img,
@@ -376,7 +386,7 @@ pub fn report_pose_with_points(
                 image::Rgb([255, 0, 0]),
             );
         }
-        for kp in b.data.iter() {
+        for kp in largest_bbox.data.iter() {
             if kp.mask < 0.6 {
                 continue;
             }
@@ -390,19 +400,17 @@ pub fn report_pose_with_points(
             );
         }
 
-        if bboxes.len() == 1 {
-            // 只检测一个人的姿态
-            for kp in b.data.iter() {
-                if kp.mask < 0.6 {
-                    points.push(Point::new(-1.0, -1.0));
-                }
-                points.push(Point::new(kp.x * w_ratio, kp.y * h_ratio));
+        // 只检测一个人的姿态
+        for kp in largest_bbox.data.iter() {
+            if kp.mask < 0.6 {
+                points.push(Point::new(-1.0, -1.0));
             }
+            points.push(Point::new(kp.x * w_ratio, kp.y * h_ratio));
         }
 
         for &(idx1, idx2) in KP_CONNECTIONS.iter() {
-            let kp1 = &b.data[idx1];
-            let kp2 = &b.data[idx2];
+            let kp1 = &largest_bbox.data[idx1];
+            let kp2 = &largest_bbox.data[idx2];
             if kp1.mask < 0.6 || kp2.mask < 0.6 {
                 continue;
             }
@@ -413,8 +421,11 @@ pub fn report_pose_with_points(
                 image::Rgb([255, 255, 0]),
             );
         }
+
+        return Ok((DynamicImage::ImageRgb8(img), points));
     }
-    Ok((DynamicImage::ImageRgb8(img), points))
+
+    return Ok((img.into(), vec![]));
 }
 
 impl Model<YoloV8> {

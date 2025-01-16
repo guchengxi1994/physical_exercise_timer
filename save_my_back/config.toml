@@ -1,0 +1,2 @@
+[config]
+model-path = "D:/github_repo/ai_tools/rust/assets/yolov8s-pose.safetensors"

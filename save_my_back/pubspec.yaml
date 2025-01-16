@@ -47,6 +47,7 @@ dependencies:
   flutter_riverpod: ^2.6.1
   logger: ^2.5.0
   he: ^0.0.2+1
+  toml: "^0.16.0"
   
 
 dev_dependencies:
