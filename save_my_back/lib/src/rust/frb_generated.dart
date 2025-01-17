@@ -11,6 +11,7 @@ import 'frb_generated.dart';
 import 'frb_generated.io.dart'
     if (dart.library.js_interop) 'frb_generated.web.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
+import 'yolo/utils.dart';
 
 /// Main entrypoint of the Rust API
 class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
@@ -69,7 +70,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.5.1';
 
   @override
-  int get rustContentHash => 1759566123;
+  int get rustContentHash => 1551990353;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -80,7 +81,13 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
 }
 
 abstract class RustLibApi extends BaseApi {
-  Future<(Uint8List, String)?> crateApiDetectorInfer(
+  String crateApiDetectorGetHint({required PoseState state});
+
+  PoseState crateApiDetectorGetPoseStateByIndex({required BigInt index});
+
+  BigInt crateApiDetectorGetPoseType({required PoseState state});
+
+  Future<(Uint8List, List<PoseState>)?> crateApiDetectorInfer(
       {required List<int> imgBytes});
 
   Future<String> crateApiDetectorInitModels({required String modelPath});
@@ -99,18 +106,89 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   });
 
   @override
-  Future<(Uint8List, String)?> crateApiDetectorInfer(
+  String crateApiDetectorGetHint({required PoseState state}) {
+    return handler.executeSync(SyncTask(
+      callFfi: () {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_box_autoadd_pose_state(state, serializer);
+        return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 1)!;
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_String,
+        decodeErrorData: null,
+      ),
+      constMeta: kCrateApiDetectorGetHintConstMeta,
+      argValues: [state],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateApiDetectorGetHintConstMeta => const TaskConstMeta(
+        debugName: "get_hint",
+        argNames: ["state"],
+      );
+
+  @override
+  PoseState crateApiDetectorGetPoseStateByIndex({required BigInt index}) {
+    return handler.executeSync(SyncTask(
+      callFfi: () {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_usize(index, serializer);
+        return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 2)!;
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_pose_state,
+        decodeErrorData: null,
+      ),
+      constMeta: kCrateApiDetectorGetPoseStateByIndexConstMeta,
+      argValues: [index],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateApiDetectorGetPoseStateByIndexConstMeta =>
+      const TaskConstMeta(
+        debugName: "get_pose_state_by_index",
+        argNames: ["index"],
+      );
+
+  @override
+  BigInt crateApiDetectorGetPoseType({required PoseState state}) {
+    return handler.executeSync(SyncTask(
+      callFfi: () {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_box_autoadd_pose_state(state, serializer);
+        return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 3)!;
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_usize,
+        decodeErrorData: null,
+      ),
+      constMeta: kCrateApiDetectorGetPoseTypeConstMeta,
+      argValues: [state],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateApiDetectorGetPoseTypeConstMeta =>
+      const TaskConstMeta(
+        debugName: "get_pose_type",
+        argNames: ["state"],
+      );
+
+  @override
+  Future<(Uint8List, List<PoseState>)?> crateApiDetectorInfer(
       {required List<int> imgBytes}) {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_list_prim_u_8_loose(imgBytes, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 1, port: port_);
+            funcId: 4, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData:
-            sse_decode_opt_box_autoadd_record_list_prim_u_8_strict_string,
+            sse_decode_opt_box_autoadd_record_list_prim_u_8_strict_list_pose_state,
         decodeErrorData: null,
       ),
       constMeta: kCrateApiDetectorInferConstMeta,
@@ -131,7 +209,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(modelPath, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 2, port: port_);
+            funcId: 5, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_String,
@@ -154,7 +232,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       callFfi: () {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(name, serializer);
-        return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 3)!;
+        return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 6)!;
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_String,
@@ -177,7 +255,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 4, port: port_);
+            funcId: 7, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_unit,
@@ -201,10 +279,23 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  (Uint8List, String) dco_decode_box_autoadd_record_list_prim_u_8_strict_string(
-      dynamic raw) {
+  PoseState dco_decode_box_autoadd_pose_state(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
-    return raw as (Uint8List, String);
+    return dco_decode_pose_state(raw);
+  }
+
+  @protected
+  (Uint8List, List<PoseState>)
+      dco_decode_box_autoadd_record_list_prim_u_8_strict_list_pose_state(
+          dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw as (Uint8List, List<PoseState>);
+  }
+
+  @protected
+  List<PoseState> dco_decode_list_pose_state(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return (raw as List<dynamic>).map(dco_decode_pose_state).toList();
   }
 
   @protected
@@ -220,18 +311,52 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  (Uint8List, String)?
-      dco_decode_opt_box_autoadd_record_list_prim_u_8_strict_string(
+  (Uint8List, List<PoseState>)?
+      dco_decode_opt_box_autoadd_record_list_prim_u_8_strict_list_pose_state(
           dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw == null
         ? null
-        : dco_decode_box_autoadd_record_list_prim_u_8_strict_string(raw);
+        : dco_decode_box_autoadd_record_list_prim_u_8_strict_list_pose_state(
+            raw);
   }
 
   @protected
-  (Uint8List, String) dco_decode_record_list_prim_u_8_strict_string(
-      dynamic raw) {
+  PoseState dco_decode_pose_state(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    switch (raw[0]) {
+      case 0:
+        return PoseState_Good();
+      case 1:
+        return PoseState_Nobody();
+      case 2:
+        return PoseState_PointsCountError(
+          dco_decode_usize(raw[1]),
+        );
+      case 3:
+        return PoseState_HeadOffsetTooMuch();
+      case 4:
+        return PoseState_HeadInclinedTooMuch();
+      case 5:
+        return PoseState_ShoulderHeightDiffTooMuch();
+      case 6:
+        return PoseState_SpineAlignment();
+      case 7:
+        return PoseState_LeftArmAngleNotGood();
+      case 8:
+        return PoseState_RightArmAngleNotGood();
+      case 9:
+        return PoseState_LeftLegAngleNotGood();
+      case 10:
+        return PoseState_RightLegAngleNotGood();
+      default:
+        throw Exception("unreachable");
+    }
+  }
+
+  @protected
+  (Uint8List, List<PoseState>)
+      dco_decode_record_list_prim_u_8_strict_list_pose_state(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
     if (arr.length != 2) {
@@ -239,7 +364,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     }
     return (
       dco_decode_list_prim_u_8_strict(arr[0]),
-      dco_decode_String(arr[1]),
+      dco_decode_list_pose_state(arr[1]),
     );
   }
 
@@ -256,6 +381,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  BigInt dco_decode_usize(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dcoDecodeU64(raw);
+  }
+
+  @protected
   String sse_decode_String(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var inner = sse_decode_list_prim_u_8_strict(deserializer);
@@ -263,10 +394,30 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  (Uint8List, String) sse_decode_box_autoadd_record_list_prim_u_8_strict_string(
-      SseDeserializer deserializer) {
+  PoseState sse_decode_box_autoadd_pose_state(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
-    return (sse_decode_record_list_prim_u_8_strict_string(deserializer));
+    return (sse_decode_pose_state(deserializer));
+  }
+
+  @protected
+  (Uint8List, List<PoseState>)
+      sse_decode_box_autoadd_record_list_prim_u_8_strict_list_pose_state(
+          SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_record_list_prim_u_8_strict_list_pose_state(
+        deserializer));
+  }
+
+  @protected
+  List<PoseState> sse_decode_list_pose_state(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    var len_ = sse_decode_i_32(deserializer);
+    var ans_ = <PoseState>[];
+    for (var idx_ = 0; idx_ < len_; ++idx_) {
+      ans_.add(sse_decode_pose_state(deserializer));
+    }
+    return ans_;
   }
 
   @protected
@@ -284,13 +435,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  (Uint8List, String)?
-      sse_decode_opt_box_autoadd_record_list_prim_u_8_strict_string(
+  (Uint8List, List<PoseState>)?
+      sse_decode_opt_box_autoadd_record_list_prim_u_8_strict_list_pose_state(
           SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
 
     if (sse_decode_bool(deserializer)) {
-      return (sse_decode_box_autoadd_record_list_prim_u_8_strict_string(
+      return (sse_decode_box_autoadd_record_list_prim_u_8_strict_list_pose_state(
           deserializer));
     } else {
       return null;
@@ -298,11 +449,46 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  (Uint8List, String) sse_decode_record_list_prim_u_8_strict_string(
-      SseDeserializer deserializer) {
+  PoseState sse_decode_pose_state(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    var tag_ = sse_decode_i_32(deserializer);
+    switch (tag_) {
+      case 0:
+        return PoseState_Good();
+      case 1:
+        return PoseState_Nobody();
+      case 2:
+        var var_field0 = sse_decode_usize(deserializer);
+        return PoseState_PointsCountError(var_field0);
+      case 3:
+        return PoseState_HeadOffsetTooMuch();
+      case 4:
+        return PoseState_HeadInclinedTooMuch();
+      case 5:
+        return PoseState_ShoulderHeightDiffTooMuch();
+      case 6:
+        return PoseState_SpineAlignment();
+      case 7:
+        return PoseState_LeftArmAngleNotGood();
+      case 8:
+        return PoseState_RightArmAngleNotGood();
+      case 9:
+        return PoseState_LeftLegAngleNotGood();
+      case 10:
+        return PoseState_RightLegAngleNotGood();
+      default:
+        throw UnimplementedError('');
+    }
+  }
+
+  @protected
+  (Uint8List, List<PoseState>)
+      sse_decode_record_list_prim_u_8_strict_list_pose_state(
+          SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var var_field0 = sse_decode_list_prim_u_8_strict(deserializer);
-    var var_field1 = sse_decode_String(deserializer);
+    var var_field1 = sse_decode_list_pose_state(deserializer);
     return (var_field0, var_field1);
   }
 
@@ -315,6 +501,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   @protected
   void sse_decode_unit(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
+  }
+
+  @protected
+  BigInt sse_decode_usize(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return deserializer.buffer.getBigUint64();
   }
 
   @protected
@@ -336,10 +528,27 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  void sse_encode_box_autoadd_record_list_prim_u_8_strict_string(
-      (Uint8List, String) self, SseSerializer serializer) {
+  void sse_encode_box_autoadd_pose_state(
+      PoseState self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
-    sse_encode_record_list_prim_u_8_strict_string(self, serializer);
+    sse_encode_pose_state(self, serializer);
+  }
+
+  @protected
+  void sse_encode_box_autoadd_record_list_prim_u_8_strict_list_pose_state(
+      (Uint8List, List<PoseState>) self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_record_list_prim_u_8_strict_list_pose_state(self, serializer);
+  }
+
+  @protected
+  void sse_encode_list_pose_state(
+      List<PoseState> self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.length, serializer);
+    for (final item in self) {
+      sse_encode_pose_state(item, serializer);
+    }
   }
 
   @protected
@@ -360,23 +569,55 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  void sse_encode_opt_box_autoadd_record_list_prim_u_8_strict_string(
-      (Uint8List, String)? self, SseSerializer serializer) {
+  void sse_encode_opt_box_autoadd_record_list_prim_u_8_strict_list_pose_state(
+      (Uint8List, List<PoseState>)? self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
 
     sse_encode_bool(self != null, serializer);
     if (self != null) {
-      sse_encode_box_autoadd_record_list_prim_u_8_strict_string(
+      sse_encode_box_autoadd_record_list_prim_u_8_strict_list_pose_state(
           self, serializer);
     }
   }
 
   @protected
-  void sse_encode_record_list_prim_u_8_strict_string(
-      (Uint8List, String) self, SseSerializer serializer) {
+  void sse_encode_pose_state(PoseState self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    switch (self) {
+      case PoseState_Good():
+        sse_encode_i_32(0, serializer);
+      case PoseState_Nobody():
+        sse_encode_i_32(1, serializer);
+      case PoseState_PointsCountError(field0: final field0):
+        sse_encode_i_32(2, serializer);
+        sse_encode_usize(field0, serializer);
+      case PoseState_HeadOffsetTooMuch():
+        sse_encode_i_32(3, serializer);
+      case PoseState_HeadInclinedTooMuch():
+        sse_encode_i_32(4, serializer);
+      case PoseState_ShoulderHeightDiffTooMuch():
+        sse_encode_i_32(5, serializer);
+      case PoseState_SpineAlignment():
+        sse_encode_i_32(6, serializer);
+      case PoseState_LeftArmAngleNotGood():
+        sse_encode_i_32(7, serializer);
+      case PoseState_RightArmAngleNotGood():
+        sse_encode_i_32(8, serializer);
+      case PoseState_LeftLegAngleNotGood():
+        sse_encode_i_32(9, serializer);
+      case PoseState_RightLegAngleNotGood():
+        sse_encode_i_32(10, serializer);
+      default:
+        throw UnimplementedError('');
+    }
+  }
+
+  @protected
+  void sse_encode_record_list_prim_u_8_strict_list_pose_state(
+      (Uint8List, List<PoseState>) self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_list_prim_u_8_strict(self.$1, serializer);
-    sse_encode_String(self.$2, serializer);
+    sse_encode_list_pose_state(self.$2, serializer);
   }
 
   @protected
@@ -388,6 +629,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   @protected
   void sse_encode_unit(void self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
+  }
+
+  @protected
+  void sse_encode_usize(BigInt self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    serializer.buffer.putBigUint64(self);
   }
 
   @protected

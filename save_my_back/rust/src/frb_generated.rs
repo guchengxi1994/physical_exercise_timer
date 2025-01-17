@@ -37,7 +37,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueMoi,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.5.1";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 1759566123;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 1551990353;
 
 // Section: executor
 
@@ -45,6 +45,98 @@ flutter_rust_bridge::frb_generated_default_handler!();
 
 // Section: wire_funcs
 
+fn wire__crate__api__detector__get_hint_impl(
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "get_hint",
+            port: None,
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_state = <crate::yolo::utils::PoseState>::sse_decode(&mut deserializer);
+            deserializer.end();
+            transform_result_sse::<_, ()>((move || {
+                let output_ok = Result::<_, ()>::Ok(crate::api::detector::get_hint(api_state))?;
+                Ok(output_ok)
+            })())
+        },
+    )
+}
+fn wire__crate__api__detector__get_pose_state_by_index_impl(
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "get_pose_state_by_index",
+            port: None,
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_index = <usize>::sse_decode(&mut deserializer);
+            deserializer.end();
+            transform_result_sse::<_, ()>((move || {
+                let output_ok =
+                    Result::<_, ()>::Ok(crate::api::detector::get_pose_state_by_index(api_index))?;
+                Ok(output_ok)
+            })())
+        },
+    )
+}
+fn wire__crate__api__detector__get_pose_type_impl(
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "get_pose_type",
+            port: None,
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_state = <crate::yolo::utils::PoseState>::sse_decode(&mut deserializer);
+            deserializer.end();
+            transform_result_sse::<_, ()>((move || {
+                let output_ok =
+                    Result::<_, ()>::Ok(crate::api::detector::get_pose_type(api_state))?;
+                Ok(output_ok)
+            })())
+        },
+    )
+}
 fn wire__crate__api__detector__infer_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
@@ -188,6 +280,18 @@ impl SseDecode for String {
     }
 }
 
+impl SseDecode for Vec<crate::yolo::utils::PoseState> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut len_ = <i32>::sse_decode(deserializer);
+        let mut ans_ = vec![];
+        for idx_ in 0..len_ {
+            ans_.push(<crate::yolo::utils::PoseState>::sse_decode(deserializer));
+        }
+        return ans_;
+    }
+}
+
 impl SseDecode for Vec<u8> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -200,22 +304,70 @@ impl SseDecode for Vec<u8> {
     }
 }
 
-impl SseDecode for Option<(Vec<u8>, String)> {
+impl SseDecode for Option<(Vec<u8>, Vec<crate::yolo::utils::PoseState>)> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         if (<bool>::sse_decode(deserializer)) {
-            return Some(<(Vec<u8>, String)>::sse_decode(deserializer));
+            return Some(<(Vec<u8>, Vec<crate::yolo::utils::PoseState>)>::sse_decode(
+                deserializer,
+            ));
         } else {
             return None;
         }
     }
 }
 
-impl SseDecode for (Vec<u8>, String) {
+impl SseDecode for crate::yolo::utils::PoseState {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut tag_ = <i32>::sse_decode(deserializer);
+        match tag_ {
+            0 => {
+                return crate::yolo::utils::PoseState::Good;
+            }
+            1 => {
+                return crate::yolo::utils::PoseState::Nobody;
+            }
+            2 => {
+                let mut var_field0 = <usize>::sse_decode(deserializer);
+                return crate::yolo::utils::PoseState::PointsCountError(var_field0);
+            }
+            3 => {
+                return crate::yolo::utils::PoseState::HeadOffsetTooMuch;
+            }
+            4 => {
+                return crate::yolo::utils::PoseState::HeadInclinedTooMuch;
+            }
+            5 => {
+                return crate::yolo::utils::PoseState::ShoulderHeightDiffTooMuch;
+            }
+            6 => {
+                return crate::yolo::utils::PoseState::SpineAlignment;
+            }
+            7 => {
+                return crate::yolo::utils::PoseState::LeftArmAngleNotGood;
+            }
+            8 => {
+                return crate::yolo::utils::PoseState::RightArmAngleNotGood;
+            }
+            9 => {
+                return crate::yolo::utils::PoseState::LeftLegAngleNotGood;
+            }
+            10 => {
+                return crate::yolo::utils::PoseState::RightLegAngleNotGood;
+            }
+            _ => {
+                unimplemented!("");
+            }
+        }
+    }
+}
+
+impl SseDecode for (Vec<u8>, Vec<crate::yolo::utils::PoseState>) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut var_field0 = <Vec<u8>>::sse_decode(deserializer);
-        let mut var_field1 = <String>::sse_decode(deserializer);
+        let mut var_field1 = <Vec<crate::yolo::utils::PoseState>>::sse_decode(deserializer);
         return (var_field0, var_field1);
     }
 }
@@ -230,6 +382,13 @@ impl SseDecode for u8 {
 impl SseDecode for () {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {}
+}
+
+impl SseDecode for usize {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        deserializer.cursor.read_u64::<NativeEndian>().unwrap() as _
+    }
 }
 
 impl SseDecode for i32 {
@@ -255,9 +414,9 @@ fn pde_ffi_dispatcher_primary_impl(
 ) {
     // Codec=Pde (Serialization + dispatch), see doc to use other codecs
     match func_id {
-        1 => wire__crate__api__detector__infer_impl(port, ptr, rust_vec_len, data_len),
-        2 => wire__crate__api__detector__init_models_impl(port, ptr, rust_vec_len, data_len),
-        4 => wire__crate__api__simple__init_app_impl(port, ptr, rust_vec_len, data_len),
+        4 => wire__crate__api__detector__infer_impl(port, ptr, rust_vec_len, data_len),
+        5 => wire__crate__api__detector__init_models_impl(port, ptr, rust_vec_len, data_len),
+        7 => wire__crate__api__simple__init_app_impl(port, ptr, rust_vec_len, data_len),
         _ => unreachable!(),
     }
 }
@@ -270,17 +429,62 @@ fn pde_ffi_dispatcher_sync_impl(
 ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
     // Codec=Pde (Serialization + dispatch), see doc to use other codecs
     match func_id {
-        3 => wire__crate__api__simple__greet_impl(ptr, rust_vec_len, data_len),
+        1 => wire__crate__api__detector__get_hint_impl(ptr, rust_vec_len, data_len),
+        2 => wire__crate__api__detector__get_pose_state_by_index_impl(ptr, rust_vec_len, data_len),
+        3 => wire__crate__api__detector__get_pose_type_impl(ptr, rust_vec_len, data_len),
+        6 => wire__crate__api__simple__greet_impl(ptr, rust_vec_len, data_len),
         _ => unreachable!(),
     }
 }
 
 // Section: rust2dart
 
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::yolo::utils::PoseState {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        match self {
+            crate::yolo::utils::PoseState::Good => [0.into_dart()].into_dart(),
+            crate::yolo::utils::PoseState::Nobody => [1.into_dart()].into_dart(),
+            crate::yolo::utils::PoseState::PointsCountError(field0) => {
+                [2.into_dart(), field0.into_into_dart().into_dart()].into_dart()
+            }
+            crate::yolo::utils::PoseState::HeadOffsetTooMuch => [3.into_dart()].into_dart(),
+            crate::yolo::utils::PoseState::HeadInclinedTooMuch => [4.into_dart()].into_dart(),
+            crate::yolo::utils::PoseState::ShoulderHeightDiffTooMuch => [5.into_dart()].into_dart(),
+            crate::yolo::utils::PoseState::SpineAlignment => [6.into_dart()].into_dart(),
+            crate::yolo::utils::PoseState::LeftArmAngleNotGood => [7.into_dart()].into_dart(),
+            crate::yolo::utils::PoseState::RightArmAngleNotGood => [8.into_dart()].into_dart(),
+            crate::yolo::utils::PoseState::LeftLegAngleNotGood => [9.into_dart()].into_dart(),
+            crate::yolo::utils::PoseState::RightLegAngleNotGood => [10.into_dart()].into_dart(),
+            _ => {
+                unimplemented!("");
+            }
+        }
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for crate::yolo::utils::PoseState {}
+impl flutter_rust_bridge::IntoIntoDart<crate::yolo::utils::PoseState>
+    for crate::yolo::utils::PoseState
+{
+    fn into_into_dart(self) -> crate::yolo::utils::PoseState {
+        self
+    }
+}
+
 impl SseEncode for String {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <Vec<u8>>::sse_encode(self.into_bytes(), serializer);
+    }
+}
+
+impl SseEncode for Vec<crate::yolo::utils::PoseState> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i32>::sse_encode(self.len() as _, serializer);
+        for item in self {
+            <crate::yolo::utils::PoseState>::sse_encode(item, serializer);
+        }
     }
 }
 
@@ -294,21 +498,66 @@ impl SseEncode for Vec<u8> {
     }
 }
 
-impl SseEncode for Option<(Vec<u8>, String)> {
+impl SseEncode for Option<(Vec<u8>, Vec<crate::yolo::utils::PoseState>)> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <bool>::sse_encode(self.is_some(), serializer);
         if let Some(value) = self {
-            <(Vec<u8>, String)>::sse_encode(value, serializer);
+            <(Vec<u8>, Vec<crate::yolo::utils::PoseState>)>::sse_encode(value, serializer);
         }
     }
 }
 
-impl SseEncode for (Vec<u8>, String) {
+impl SseEncode for crate::yolo::utils::PoseState {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        match self {
+            crate::yolo::utils::PoseState::Good => {
+                <i32>::sse_encode(0, serializer);
+            }
+            crate::yolo::utils::PoseState::Nobody => {
+                <i32>::sse_encode(1, serializer);
+            }
+            crate::yolo::utils::PoseState::PointsCountError(field0) => {
+                <i32>::sse_encode(2, serializer);
+                <usize>::sse_encode(field0, serializer);
+            }
+            crate::yolo::utils::PoseState::HeadOffsetTooMuch => {
+                <i32>::sse_encode(3, serializer);
+            }
+            crate::yolo::utils::PoseState::HeadInclinedTooMuch => {
+                <i32>::sse_encode(4, serializer);
+            }
+            crate::yolo::utils::PoseState::ShoulderHeightDiffTooMuch => {
+                <i32>::sse_encode(5, serializer);
+            }
+            crate::yolo::utils::PoseState::SpineAlignment => {
+                <i32>::sse_encode(6, serializer);
+            }
+            crate::yolo::utils::PoseState::LeftArmAngleNotGood => {
+                <i32>::sse_encode(7, serializer);
+            }
+            crate::yolo::utils::PoseState::RightArmAngleNotGood => {
+                <i32>::sse_encode(8, serializer);
+            }
+            crate::yolo::utils::PoseState::LeftLegAngleNotGood => {
+                <i32>::sse_encode(9, serializer);
+            }
+            crate::yolo::utils::PoseState::RightLegAngleNotGood => {
+                <i32>::sse_encode(10, serializer);
+            }
+            _ => {
+                unimplemented!("");
+            }
+        }
+    }
+}
+
+impl SseEncode for (Vec<u8>, Vec<crate::yolo::utils::PoseState>) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <Vec<u8>>::sse_encode(self.0, serializer);
-        <String>::sse_encode(self.1, serializer);
+        <Vec<crate::yolo::utils::PoseState>>::sse_encode(self.1, serializer);
     }
 }
 
@@ -322,6 +571,16 @@ impl SseEncode for u8 {
 impl SseEncode for () {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {}
+}
+
+impl SseEncode for usize {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        serializer
+            .cursor
+            .write_u64::<NativeEndian>(self as _)
+            .unwrap();
+    }
 }
 
 impl SseEncode for i32 {

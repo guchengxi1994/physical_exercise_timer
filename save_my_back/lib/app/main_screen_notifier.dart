@@ -90,7 +90,11 @@ class MainScreenNotifier extends AutoDisposeAsyncNotifier<MainScreenState> {
       if (inferenceResult == null) {
         return;
       }
-      streamController.add((imgBytes, inferenceResult.$1, inferenceResult.$2));
+      streamController.add((
+        imgBytes,
+        inferenceResult.$1,
+        inferenceResult.$2.map((e) => getHint(state: e)).join("; ")
+      ));
       logger.d("send to frontend");
     });
   }

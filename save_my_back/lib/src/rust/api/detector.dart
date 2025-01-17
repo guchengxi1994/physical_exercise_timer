@@ -4,10 +4,20 @@
 // ignore_for_file: invalid_use_of_internal_member, unused_import, unnecessary_import
 
 import '../frb_generated.dart';
+import '../yolo/utils.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 Future<String> initModels({required String modelPath}) =>
     RustLib.instance.api.crateApiDetectorInitModels(modelPath: modelPath);
 
-Future<(Uint8List, String)?> infer({required List<int> imgBytes}) =>
+String getHint({required PoseState state}) =>
+    RustLib.instance.api.crateApiDetectorGetHint(state: state);
+
+BigInt getPoseType({required PoseState state}) =>
+    RustLib.instance.api.crateApiDetectorGetPoseType(state: state);
+
+PoseState getPoseStateByIndex({required BigInt index}) =>
+    RustLib.instance.api.crateApiDetectorGetPoseStateByIndex(index: index);
+
+Future<(Uint8List, List<PoseState>)?> infer({required List<int> imgBytes}) =>
     RustLib.instance.api.crateApiDetectorInfer(imgBytes: imgBytes);

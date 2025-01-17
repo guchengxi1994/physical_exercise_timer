@@ -7,7 +7,7 @@ use imageproc::definitions::Image;
 use infer::{report_detect, report_pose, report_pose_with_points};
 use model::{YoloV8, YoloV8Pose};
 use once_cell::sync::Lazy;
-use utils::check_posture;
+use utils::{check_posture, PoseState};
 
 pub mod infer;
 pub mod model;
@@ -28,7 +28,7 @@ pub fn init_models(model_path: String) -> anyhow::Result<()> {
     Ok(())
 }
 
-pub fn infer(img_bytes: Vec<u8>) -> anyhow::Result<(Vec<u8>, String)> {
+pub fn infer(img_bytes: Vec<u8>) -> anyhow::Result<(Vec<u8>, Vec<PoseState>)> {
     let models = MODELS.read().unwrap();
     models.pose_run(img_bytes)
 }
@@ -77,7 +77,7 @@ impl Models {
         }
     }
 
-    pub fn pose_run(&self, image_bytes: Vec<u8>) -> anyhow::Result<(Vec<u8>, String)> {
+    pub fn pose_run(&self, image_bytes: Vec<u8>) -> anyhow::Result<(Vec<u8>, Vec<PoseState>)> {
         let device = Device::cuda_if_available(0)?;
         let origin_image = ImageProcessor::from_bytes(image_bytes, &device)?;
 
@@ -183,7 +183,7 @@ mod tests {
 
         let b = infer(img_bytes)?;
         std::fs::write("bike_result.jpg", b.0)?;
-        println!("{}", b.1);
+        println!("{:?}", b.1);
         anyhow::Ok(())
     }
 }
