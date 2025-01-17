@@ -3,9 +3,8 @@ use std::{io::Cursor, sync::RwLock};
 use anyhow::Ok;
 use candle_core::{DType, Device, Tensor};
 use image::DynamicImage;
-use imageproc::definitions::Image;
 use infer::{report_detect, report_pose, report_pose_with_points};
-use model::{YoloV8, YoloV8Pose};
+use model::YoloV8Pose;
 use once_cell::sync::Lazy;
 use utils::{check_posture, PoseState};
 

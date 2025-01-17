@@ -1,2 +1,4 @@
 [config]
 model-path = "D:/github_repo/ai_tools/rust/assets/yolov8s-pose.safetensors"
+record-period = 10 # seconds
+camera-angles = [30,0] # degrees: horizontal, vertical, but not used yet

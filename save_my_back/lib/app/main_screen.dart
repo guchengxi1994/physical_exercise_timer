@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:he/he.dart';
 import 'package:save_my_back/constants.dart';
 
+import 'chart.dart';
 import 'main_screen_notifier.dart';
 
 class MainScreen extends ConsumerStatefulWidget {
@@ -48,6 +49,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
                   width: minSize.width - 16,
                   child: Column(
                     children: [
+                      Chart(),
                       ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             shape: RoundedRectangleBorder(

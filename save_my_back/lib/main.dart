@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:save_my_back/config.dart';
@@ -10,20 +8,17 @@ import 'package:window_manager/window_manager.dart';
 
 import 'app/main_screen.dart';
 import 'constants.dart';
-
-String getConfigPath() {
-  String executablePath = Platform.resolvedExecutable;
-  return "${File(executablePath).parent.path}/config.toml";
-}
+import 'isar/database.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await windowManager.ensureInitialized();
   await RustLib.init();
+  await IsarDatabase().initialDatabase();
 
-  AppConfig config = AppConfig.fromFile(File(getConfigPath()));
+  CONFIG.init();
 
-  await initModels(modelPath: config.modelPath);
+  await initModels(modelPath: CONFIG.modelPath);
 
   WindowOptions windowOptions = WindowOptions(
     size: minSize,

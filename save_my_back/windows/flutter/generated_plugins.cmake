@@ -5,6 +5,7 @@
 list(APPEND FLUTTER_PLUGIN_LIST
   auto_lock_windows
   camera_windows
+  isar_flutter_libs
   screen_retriever_windows
   window_manager
 )

@@ -49,6 +49,14 @@ dependencies:
   he: ^0.0.2+1
   toml: "^0.16.0"
   freezed_annotation: ^2.4.4
+  isar: 
+    version: 3.1.8
+    hosted: https://pub.isar-community.dev/
+  isar_flutter_libs: 
+    version: 3.1.8
+    hosted: https://pub.isar-community.dev/
+  path_provider: ^2.1.5
+  fl_chart: ^0.70.2
   
 
 dev_dependencies:
@@ -61,10 +69,14 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
-  freezed: ^2.5.8
-  build_runner: ^2.4.14
+  freezed: ^2.5.7
+  build_runner: ^2.4.14  # flutter pub run build_runner build
+  isar_generator: 
+    version: 3.1.8
+    hosted: https://pub.isar-community.dev/
   integration_test:
     sdk: flutter
+  flutter_launcher_icons: "^0.14.2"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -107,3 +119,22 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "image/icon.jpeg"
+  min_sdk_android: 21 # android min sdk min:16, default 21
+  web:
+    generate: true
+    image_path: "image/icon.jpeg"
+    background_color: "#hexcode"
+    theme_color: "#hexcode"
+  windows:
+    generate: true
+    image_path: "image/icon.jpeg"
+    icon_size: 48 # min:48, max:256, default: 48
+  macos:
+    generate: true
+    image_path: "image/icon.jpeg"

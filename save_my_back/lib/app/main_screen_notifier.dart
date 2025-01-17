@@ -3,11 +3,13 @@ import 'dart:async';
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:save_my_back/config.dart';
 import 'package:save_my_back/constants.dart';
 import 'package:save_my_back/src/rust/api/detector.dart';
 import 'package:save_my_back/utils/logger.dart';
 import 'package:window_manager/window_manager.dart';
 
+import 'chart_notifier.dart';
 import 'main_screen_state.dart';
 
 class MainScreenNotifier extends AutoDisposeAsyncNotifier<MainScreenState> {
@@ -83,7 +85,8 @@ class MainScreenNotifier extends AutoDisposeAsyncNotifier<MainScreenState> {
       return state.value!.copyWith(isCameraReady: true, cameraId: cameraId);
     });
 
-    timer = Timer.periodic(Duration(seconds: 5), (timer) async {
+    timer =
+        Timer.periodic(Duration(seconds: CONFIG.recordPeriod), (timer) async {
       final image = await CameraPlatform.instance.takePicture(cameraId);
       final imgBytes = await image.readAsBytes();
       final inferenceResult = await infer(imgBytes: imgBytes);
@@ -95,6 +98,7 @@ class MainScreenNotifier extends AutoDisposeAsyncNotifier<MainScreenState> {
         inferenceResult.$1,
         inferenceResult.$2.map((e) => getHint(state: e)).join("; ")
       ));
+      ref.read(chartNotifierProvider.notifier).addRecords(inferenceResult.$2);
       logger.d("send to frontend");
     });
   }
