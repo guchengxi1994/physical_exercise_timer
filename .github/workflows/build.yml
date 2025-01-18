@@ -30,20 +30,23 @@ jobs:
             pubspec-
 
       - name: Run pub get
+        working-directory: save_my_back
         run: | 
-          cd save_my_back
           flutter pub get
 
       - name: Bump build number
+        working-directory: save_my_back
         run: |
           flutter pub global activate cider
 
       - name: Build windows
+        working-directory: save_my_back
         run: |
           flutter config --enable-windows-desktop
           flutter build windows --release
 
       - name: Set tag name
+        working-directory: save_my_back
         run: echo "tag_name=v$(cider version)" >> $env:GITHUB_ENV
 
       - name: Archive release
@@ -51,13 +54,13 @@ jobs:
         with:
           type: 'zip'
           filename: 'windows.zip'
-          directory: build/windows/x64/runner/Release
+          directory: save_my_back/build/windows/x64/runner/Release
 
       - name: Publish release
         uses: ncipollo/release-action@v1
         with:
           allowUpdates: true
-          artifacts: build/windows/x64/runner/Release/windows.zip
+          artifacts: save_my_back/build/windows/x64/runner/Release/windows.zip
           generateReleaseNotes: true
           tag: ${{ env.tag_name }}
           token: ${{ secrets.RELEASE_TOKEN }}
