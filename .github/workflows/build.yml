@@ -29,11 +29,10 @@ jobs:
           restore-keys: |
             pubspec-
 
-      - name: cd 
-        run: cd save_my_back/
-
       - name: Run pub get
-        run: flutter pub get
+        run: | 
+          cd save_my_back
+          flutter pub get
 
       - name: Bump build number
         run: |
