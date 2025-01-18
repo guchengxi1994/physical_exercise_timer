@@ -24,8 +24,10 @@ Future<void> main() async {
     size: minSize,
     minimumSize: minSize,
     maximumSize: maxSize,
-    center: true,
   );
+
+  await windowManager.setMaximizable(false);
+  await windowManager.setMinimizable(false);
 
   windowManager.waitUntilReadyToShow(windowOptions, () async {
     await windowManager.show();

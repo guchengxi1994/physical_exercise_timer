@@ -1,4 +1,5 @@
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:save_my_back/isar/database.dart';
 import 'package:save_my_back/isar/record.dart';
@@ -38,7 +39,7 @@ class ChartNotifier extends Notifier<ChartState> {
         state.copyWith(records: getLastOneHourRecords(IsarDatabase().isar!));
   }
 
-  List<FlSpot> stateToSpot() {
+  List<BarChartGroupData> stateToBarChartData() {
     Map<int, int> map = {
       0: 0,
       1: 0,
@@ -58,7 +59,19 @@ class ChartNotifier extends Notifier<ChartState> {
     }
 
     return map.entries.map((e) {
-      return FlSpot(e.key.toDouble(), e.value.toDouble());
+      return BarChartGroupData(x: e.key, barRods: [
+        BarChartRodData(
+          toY: e.value.toDouble(),
+          // color:  barColor,
+          width: 22,
+          borderSide: const BorderSide(color: Colors.white, width: 0),
+          backDrawRodData: BackgroundBarChartRodData(
+            show: true,
+            toY: 20,
+            color: Colors.white30,
+          ),
+        ),
+      ]);
     }).toList();
   }
 }

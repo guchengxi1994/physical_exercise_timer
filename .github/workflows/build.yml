@@ -14,7 +14,7 @@ jobs:
       - name: Install flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: 3.16.6
+          flutter-version: 3.27.1
 
       - name: Cache pubspec
         id: cache-pubspec
@@ -28,6 +28,9 @@ jobs:
           key: pubspec-${{ hashFiles('**/pubspec.lock') }}
           restore-keys: |
             pubspec-
+
+      - name: cd 
+        run: cd save_my_back/
 
       - name: Run pub get
         run: flutter pub get

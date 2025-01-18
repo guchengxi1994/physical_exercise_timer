@@ -1,15 +1,21 @@
 // ignore_for_file: avoid_init_to_null
 
+import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:auto_lock_windows/auto_lock_windows.dart';
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:he/he.dart';
+import 'package:save_my_back/config.dart';
 import 'package:save_my_back/constants.dart';
+import 'package:save_my_back/utils/logger.dart';
 
 import 'chart.dart';
 import 'main_screen_notifier.dart';
+import 'no_input_chart.dart';
+import 'no_input_notifier.dart';
 
 class MainScreen extends ConsumerStatefulWidget {
   const MainScreen({super.key});
@@ -25,6 +31,9 @@ class _MainScreenState extends ConsumerState<MainScreen> {
   Uint8List? detectData = null;
   String? result = null;
 
+  late Timer? timer;
+  AutoLockWindows lockWindowsInstance = AutoLockWindows();
+
   @override
   void initState() {
     super.initState();
@@ -35,12 +44,25 @@ class _MainScreenState extends ConsumerState<MainScreen> {
         result = event?.$3;
       });
     });
+    timer = Timer.periodic(Duration(seconds: CONFIG.recordPeriod), (_) {
+      lockWindowsInstance.getDuration().then((v) {
+        logger.d("lockWindowsInstance.getDuration() $v");
+        ref.read(noInputNotifierProvider.notifier).updateGap(v);
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(mainScreenNotifierProvider);
     return Scaffold(
+      backgroundColor: Color(0xFF282E45),
       body: state.when(
           data: (s) {
             return Row(
@@ -49,35 +71,55 @@ class _MainScreenState extends ConsumerState<MainScreen> {
                   width: minSize.width - 16,
                   child: Column(
                     children: [
+                      NoInputChart(),
+                      SizedBox(
+                        height: 50,
+                      ),
                       Chart(),
-                      ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          onPressed: s.isCameraAvailable
-                              ? () {
-                                  ref
-                                      .read(mainScreenNotifierProvider.notifier)
-                                      .toggle();
-                                }
-                              : null,
-                          child: s.isMaximized ? Text("收起") : Text("展开")),
-                      ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          onPressed: s.isCameraAvailable
-                              ? () async {
-                                  ref
-                                      .read(mainScreenNotifierProvider.notifier)
-                                      .initCamera();
-                                }
-                              : null,
-                          child: Text("唤起摄像头"))
+                      Spacer(),
+                      Row(
+                        spacing: 20,
+                        children: [
+                          Spacer(),
+                          InkWell(
+                              onTap: s.isCameraAvailable
+                                  ? () {
+                                      ref
+                                          .read(mainScreenNotifierProvider
+                                              .notifier)
+                                          .toggle();
+                                    }
+                                  : null,
+                              child: s.isMaximized
+                                  ? Icon(
+                                      Icons.visibility_off,
+                                      color: Colors.white,
+                                    )
+                                  : Icon(
+                                      Icons.visibility,
+                                      color: Colors.white,
+                                    )),
+                          InkWell(
+                              onTap: s.isCameraAvailable
+                                  ? () async {
+                                      ref
+                                          .read(mainScreenNotifierProvider
+                                              .notifier)
+                                          .initCamera();
+                                    }
+                                  : null,
+                              child: Icon(
+                                Icons.camera_enhance,
+                                color: Colors.white,
+                              )),
+                          SizedBox(
+                            width: 10,
+                          )
+                        ],
+                      ),
+                      SizedBox(
+                        height: 10,
+                      )
                     ],
                   ),
                 ),
